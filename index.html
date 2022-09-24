@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Please file your complaint.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Roboto:wght@400;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, user-scalable=yes">
+    <style>
+      *{
+        font-family: Roboto;
+      }
+      ::placeholder{
+        color: #AAA;
+        opacity: 1;
+      }
+      body{
+        text-align: center;
+        margin: 3vh;
+        overflow-x: hidden;
+      }
+      #container{
+        display: inline-block;
+        overflow: visible;
+        background: #FFF;
+        /*box-shadow: 0 0 3vh #EEE;*/
+        box-sizing: border-box;
+        padding: 3vh;
+        font-size: 3vmin;
+      }
+      @media (orientation: portrait){
+        body{
+          margin: 0;
+        }
+        #container{
+          width: 100%;
+        }
+      }
+      @media (orientation: landscape){
+        #container{
+          width: 90vh;
+        }
+      }
+      h1{
+        color: #668;
+        font-size: 10vmin;
+      }
+      .p{
+        color: #888;
+        font-size: 3vmin;
+        text-align: left;
+      }
+      textarea{
+        color: #333;
+        font-size: 3vmin;
+        width: 100%;
+        resize: none;
+        outline: none;
+        padding: 1vmin;
+        box-sizing: border-box;
+        border: 2px solid #AAA;
+        border-radius: 5px;
+        transition: border .2s;
+      }
+      textarea:focus{
+        border-color: #2CAAE7;
+      }
+      .page{
+        display: none;
+      }
+      .button{
+        color: white;
+        background-color: #2CAAE7;
+        display: inline-block;
+        padding: 1vmin;
+        font-size: 3vmin;
+        min-width: 20vmin;
+        border-radius: 1vmin;
+        cursor: pointer;
+        transition: transform .2s, box-shadow .2s;
+      }
+      .button.disabled{
+        background: #888;
+      }
+      .button:hover{
+        transform: scale(1.1);
+        box-shadow: 0 0 3vmin #EEE;
+      }
+      .button.disabled:hover{
+        transform: scale(1);
+        box-shadow: none;
+      }
+      .text{
+        color: #333;
+        font-size: 3vmin;
+        width: 100%;
+        outline: none;
+        padding: 1vmin;
+        box-sizing: border-box;
+        border: 2px solid #AAA;
+        border-radius: 5px;
+        transition: border .2s;
+      }
+      .text:focus{
+        border-color: #2CAAE7;
+      }
+      #captcha{
+        height: 74px;
+        width: 300px;
+        display: flex;
+        align-items: center;
+        background: #f9f9f9;
+        color: #000;
+        border: 1px solid #d3d3d3;
+        border-radius: 3px;
+        text-align: left;
+      }
+      #ccbox{
+        outline: none;
+        height: 24px;
+        width: 24px;
+        margin-left: 12px;
+        margin-right: 12px;
+        border: 2px solid #c1c1c1;
+        border-radius: 2px;
+        transform: translateY(-2px);
+        background: #FFF;
+        box-sizing: initial;
+        padding: 0;
+        position: relative;
+      }
+      #ccbox:active{
+        background: #EBEBEB;
+      }
+      #ccbox:hover{
+        inset 0px 1px 1px rgba(0, 0, 0, 0.1);
+        border: 2px solid #b2b2b2;
+      }
+      #ccbox:focus{
+        border: 2px solid #4D90FE;
+      }
+      #ctext{
+        font: 14px Roboto;
+        width: 178px;
+      }
+      #cimgc{
+        line-height: 0;
+        width: 58px;
+        text-align: center;
+        transform: translate(3px, 3px);
+      }
+      #cimg{
+        display: inline-block;
+        height: 32px;
+        width: 32px;
+        background-image: url("captcha.png");
+        background-size: 32px;
+      }
+      .cstext{
+        margin-top: 5px;
+        color: #555;
+        font: 10px Roboto;
+      }
+      .cxstext{
+        margin-top: 2px;
+        color: #555;
+        font: 8px Roboto;
+      }
+      #popup{
+        position: absolute;
+        top: 50vh;
+        transform: translateY(-50%);
+        height: 580px;
+        width: 400px;
+        background: #FFF;
+        border: 1px solid #CCCCCC;
+        box-shadow: rgba(0, 0, 0, 0.2) 2px 2px 3px;
+        display: none;
+        opacity: 0;
+        transition: opacity .3s;
+      }
+      #popup.mobile{
+        left: 50vw !important;
+        transform: translate(-50%, -50%);
+      }
+      #parrow{
+        border: 11px solid transparent;
+        border-right-color: #CCCCCC;
+        width: 0;
+        height: 0;
+        position: absolute;
+        top: 0px;
+        right: 100%;
+        margin-top: -11px;
+      }
+      #popup.mobile > #parrow{
+        display: none;
+      }
+      #parrowi{
+        border: 10px solid transparent;
+        border-right-color: #FFF;
+        width: 0;
+        height: 0;
+        position: absolute;
+        top: 0px;
+        right: 100%;
+        margin-top: -10px;
+      }
+      #popup.mobile > #parrowi{
+        display: none;
+      }
+      #popupc{
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        font-size: 0px;
+      }
+      #instruct{
+        margin-top: 7px;
+        margin-bottom: 6px;
+        padding: 24px;
+        background: #1A73E8;
+        font-size: 12px;
+        color: white !important;
+        text-align: left;
+        box-sizing: border-box;
+        width: 386px;
+        display: inline-block;
+      }
+      #divider{
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: #dfdfdf;
+        margin-top: 6px;
+      }
+      .img{
+        display: inline-block;
+        margin: 1px;
+        width: 95px;
+        height: 95px;
+        background: #4E8FF5;
+        cursor: pointer;
+        background-size: 400%;
+        transition: transform 0.1s ease;
+      }
+      .img.select{
+        transform: scale(0.8);
+      }
+      #verify{
+        outline: none;
+        color: white;
+        background: #1A73E8;
+        margin: 8px;
+        margin-top: 9px;
+        padding: 0;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        min-width: 100px;
+        font: 14px Roboto;
+        display: inline-block;
+        text-align: center;
+        border-radius: 2px;
+        transition: box-shadow 0.5s ease;
+        cursor: pointer;
+        border: none;
+      }
+      #verify:active{
+        box-shadow: 0 0 0 2pt #185abc;
+      }
+      .check{
+        background-image: url("check.png");
+        background-repeat: no-repeat;
+        height: 100%;
+        width: 100%;
+        transition: transform 0.1s ease;
+        display: none;
+      }
+      .img.select > .check{
+        transform: scale(1.25);
+      }
+      #bgblocker{
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        opacity: 0;
+        background: white;
+        transition: opacity .5s;
+        z-index: -999;
+      }
+      #bgblocker.active{
+        opacity: 0.5;
+      }
+      .hidden{
+        display: none;
+      }
+      #loadinganim{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        height: 38.4px;
+        width: 38.4px;
+        display: none;
+      }
+      #checkbox{
+        height: 30px;
+        width: 38px;
+        background-image: url("greencheck.png");
+        margin-left: 7px;
+        margin-right: 7px;
+      }
+      #cc{
+        text-align: left;
+      }
+      .cb{
+        text-align: left;
+        cursor: pointer;
+      }
+      .cb:before{
+        content: "";
+        display: inline-block;
+        height: 12px;
+        width: 12px;
+        margin-right: 5px;
+        border: 1px solid #888;
+        border-radius: 100%;
+        transition: background .2s;
+      }
+      .cb.checked:before{
+        background: #2CAAE7;
+      }
+    </style>
+  </head>
+  <body>
+    <img class="hidden" src="loading.gif">
+    <div id="container">
+      <div class="page">
+        <h1>Welcome to the complaint form.</h1>
+        <p class="p">
+          We aim to please as much of our audience as possible, but we still make
+          mistakes. Let us know what we did wrong, and we will do everything we
+          can to fix it!
+        </p>
+        <br/>
+        <textarea rows="4" placeholder="Please leave your complaint here..."></textarea>
+        <br/>
+        <br/>
+        <div class="button" onclick="next()">Next</div>
+      </div>
+      <div class="page">
+        <p class="p">
+          Please leave your email address so we can contact you. Your complaint
+          cannot be registered without it.
+        </p>
+        <input class="text" placeholder="Email address">
+        <br/><br/>
+        <div id="captcha" onclick="captcha()">
+          <button id="ccbox">
+            <img id="loadinganim" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=">
+          </button>
+          <div id="ctext">I'm not a robot</div>
+          <div id="cimgc">
+            <div id="cimg"></div>
+            <div class="cstext">reCAPTCHA</div>
+            <div class="cxstext">Privacy - Terms</div>
+          </div>
+        </div>
+        <br/><br/>
+        <div class="button disabled">Next</div>
+
+        <div id="bgblocker"></div>
+        <div id="popup">
+          <div id="parrow"></div>
+          <div id="parrowi"></div>
+          <div id="popupc">
+            <div id="instruct">
+              <p style="margin: 0;"></p>
+              <p style="margin: 0; font-size: 28px; font-weight: 900"></p>
+              <p style="margin: 0; font-size: 14px; opacity: 0.5">If there are none, click skip</p>
+            </div>
+            <br/>
+            <div id="imgcont"></div>
+            <div id="divider"></div>
+            <div style="text-align: right; margin-top: 8px">
+              <button id="verify" onclick="verify()">SKIP</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="page">
+        <h1>
+          Almost done!
+        </h1>
+        <p class="p">
+          Full mailing address:
+        </p>
+
+        <input class="text" placeholder="Address Line 1">
+        <br/><br/>
+        <input class="text" placeholder="Address Line 2">
+        <br/><br/>
+        <input class="text" placeholder="City, State">
+        <br/><br/>
+        <p class="p">
+          IP Address:
+        </p>
+        <input class="text" placeholder="127.0.0.1">
+        <br/><br/>
+        <p class="p">
+          Public Key:
+        </p>
+        <input class="text">
+        <br/><br/>
+        <p class="p">
+          Private Key:
+        </p>
+        <input class="text">
+        <br/><br/>
+        <p class="p">
+          House Key:
+        </p>
+        <input class="text" type="file" accept="image/*">
+        <br/><br/>
+        <div class="button" onclick="next()">Next</div>
+      </div>
+      <div class="page">
+        <p class="p">
+          Gender:
+        </p>
+        <input class="text" placeholder="No">
+        <p class="p">
+          Sex:
+        </p>
+        <input class="text" placeholder="Lots">
+        <br/><br/><br/>
+        <p class="p">
+          What race/ethnicity(s) do you identify as?
+        </p>
+        <div class="cc">
+          <div class="cb" onclick="this.classList.toggle('checked')">Black</div>
+
+          <div class="cb" onclick="this.classList.toggle('checked')">White</div>
+
+          <div class="cb" onclick="this.classList.toggle('checked')">Asian</div>
+
+          <div class="cb" onclick="this.classList.toggle('checked')">American Indian</div>
+
+          <div class="cb" onclick="this.classList.toggle('checked')">Pacific Islander</div>
+
+          <div class="cb" onclick="this.classList.toggle('checked')">Other</div>
+        </div>
+        <p class="p">
+          What race/ethnicity(s) are you racist against?
+        </p>
+        <div class="cc">
+          <div class="cb" onclick="this.classList.toggle('checked')">Straight people</div>
+
+          <div class="cb" onclick="this.classList.toggle('checked')">Gamers</div>
+
+          <div class="cb" onclick="this.classList.toggle('checked')">The French</div>
+
+          <div class="cb" onclick="this.classList.toggle('checked')">Elon Musk</div>
+
+          <div class="cb" onclick="this.classList.toggle('checked')">Other</div>
+        </div>
+        <br/>
+        <p class="p">
+          Are your parents divorced?
+        </p>
+        <input class="text">
+        <p class="p">
+          Was it your fault?
+        </p>
+        <input class="text">
+        <br/><br/>
+        <p class="p">
+          Body Count?
+        </p>
+        <input class="text" placeholder="0">
+        <br/><br/>
+        <p class="p">
+          Leave a message to the late Queen Elizabeth.
+        </p>
+        <textarea rows="4" placeholder="She will probably not reply."></textarea>
+        <br/><br/>
+        <div class="button" onclick="next()">Next</div>
+      </div>
+      <div class="page">
+        <h1>
+          Thanks for the help!
+        </h1>
+        <p class="p">
+          Just hit "submit," and we'll get back to you as soon as we can!
+        </p>
+        <div class="button" onclick="location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';">Submit</div>
+      </div>
+    </div>
+
+    <script>
+      var page = location.href.split("page=")[1];
+      if(!page)
+        location.href = "?page=0";
+      else
+        page = parseInt(page);
+      document.getElementsByClassName("page")[page].style.display = "block";
+
+      function next(){
+        location.href = "?page=" + (page + 1);
+      }
+
+      var cOpen = false;
+      var cSlide = 0;
+
+      if(window.innerWidth < window.innerHeight)
+        document.getElementById("popup").classList.add("mobile");
+
+      function captcha(){
+        document.getElementById("popup").style.display = "block";
+        document.getElementById("loadinganim").style.display = "block";
+        setTimeout(function(){
+          document.getElementById("loadinganim").src = "loading.gif";
+        });
+        setTimeout(function(){
+          var rect0 = document.getElementById("ccbox").getBoundingClientRect(),
+              rect1 = document.getElementById("popup").getBoundingClientRect();
+          document.getElementById("popup").style.left = rect0.x + rect0.width + 12 + "px";
+          document.getElementById("popup").style.opacity = 1;
+          document.getElementById("parrow").style.top =
+          document.getElementById("parrowi").style.top = rect0.y - rect1.y + 13 + "px";
+          cOpen = true;
+          document.getElementById("bgblocker").className = "active";
+          document.getElementById("bgblocker").style.zIndex = 0;
+          document.getElementById("loadinganim").src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+          document.getElementById("loadinganim").style.display = "none";
+        }, 950);
+        loadCaptcha(0);
+      }
+
+      function loadCaptcha(n){
+        cSlide = n;
+        if(n == 0){
+          document.getElementById("instruct").children[0].innerHTML =
+          "Select all squares with";
+          document.getElementById("instruct").children[1].innerHTML =
+          "traffic lights";
+          setupSquares("traffic.jpg");
+        }else if(n == 1){
+          document.getElementById("instruct").children[0].innerHTML =
+          "Select all squares with";
+          document.getElementById("instruct").children[1].innerHTML =
+          "crosswalks";
+          setupSquares("crosswalk.jpg");
+        }else if(n == 2){
+          document.getElementById("instruct").children[0].innerHTML =
+          "Select all squares with";
+          document.getElementById("instruct").children[1].innerHTML =
+          "traffic lights";
+          setupSquares("towers.png");
+        }else if(n == 3){
+          document.getElementById("instruct").children[0].innerHTML =
+          "Select all squares with";
+          document.getElementById("instruct").children[1].innerHTML =
+          "cars";
+          setupSquares("cars.png");
+        }else{
+          document.getElementById("instruct").children[0].innerHTML =
+          "Select squares containing the semiprime with the";
+          document.getElementById("instruct").children[1].innerHTML =
+          "largest prime factors";
+          setupSquares("numbers.png");
+        }
+      }
+
+      document.getElementById("popup").onclick = function(e){
+        e.stopPropagation();
+      }
+
+      window.onclick = function(){
+        if(cOpen){
+          document.getElementById("popup").style.opacity = 0;
+          setTimeout(function(){
+            document.getElementById("popup").style.display = "none";
+          }, 300);
+          cOpen = false;
+          document.getElementById("bgblocker").className = "";
+          setTimeout(function(){
+            document.getElementById("bgblocker").style.zIndex = "";
+          }, 500);
+        }
+      }
+
+      function setupSquares(url){
+        var imgs = document.getElementById("imgcont");
+        imgs.innerHTML = "";
+        document.getElementById("verify").innerHTML = "SKIP";
+        for(var i = 0; i < 16; i++){
+          var img = document.createElement("DIV");
+          img.className = "img";
+          img.style.backgroundImage = `url("${url}")`;
+          img.style.backgroundPosition = `-${i % 4 * 100}% -${Math.floor(i / 4) * 100}%`;
+          img.innerHTML = `<div class="check"></div>`;
+          img.onclick = function(e){
+            if(this.classList.contains("select")){
+              this.children[0].style.display = "none";
+              this.classList.remove("select");
+            }else{
+              this.children[0].style.display = "block";
+              this.classList.add("select");
+            }
+            if(document.getElementsByClassName("select").length)
+              document.getElementById("verify").innerHTML = "NEXT";
+            else
+              document.getElementById("verify").innerHTML = "SKIP";
+          }
+          imgs.appendChild(img);
+          if(i % 4 == 3)
+            imgs.appendChild(document.createElement("BR"));
+        }
+      }
+
+      function verify(){
+        if(cSlide > 3){
+          document.getElementById("captcha").onclick = undefined;
+          window.onclick();
+          document.getElementsByClassName("disabled")[0].onclick = next;
+          document.getElementsByClassName("disabled")[0].classList.remove("disabled");
+          document.getElementById("ccbox").outerHTML = `<div id="checkbox"></div>`;
+          var frame = 0;
+          function updateCheck(){
+            document.getElementById("checkbox").style.backgroundPosition = `0 -${30 * frame}px`;
+            frame++;
+            if(frame < 21)
+              setTimeout(updateCheck, 10);
+          }
+          setTimeout(updateCheck);
+        }else
+          loadCaptcha(cSlide + 1);
+      }
+    </script>
+  </body>
+</html>
